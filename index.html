@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear Novelas desde una Idea</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5efe0;
+    --gold: #c9943a;
+    --gold-light: #e8c06a;
+    --rust: #8b3a1a;
+    --cream: #faf6ed;
+    --shadow: #2d1f0e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    font-size: 18px;
+    overflow-x: hidden;
+  }
+
+  /* ── TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: var(--ink);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px 100px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 110%, rgba(201,148,58,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 20%, rgba(139,58,26,0.12) 0%, transparent 60%),
+      linear-gradient(170deg, #0e0b06 0%, #1a1208 50%, #100c04 100%);
+  }
+
+  /* Decorative lines */
+  .hero-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 59px,
+        rgba(201,148,58,0.06) 59px,
+        rgba(201,148,58,0.06) 60px
+      );
+  }
+
+  .hero-ornament {
+    font-family: 'Playfair Display', serif;
+    color: rgba(201,148,58,0.15);
+    font-size: clamp(160px, 25vw, 320px);
+    font-weight: 900;
+    font-style: italic;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,148,58,0.4);
+    padding: 8px 20px;
+    margin-bottom: 40px;
+    position: relative;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(42px, 8vw, 96px);
+    color: var(--parchment);
+    text-align: center;
+    line-height: 1.05;
+    position: relative;
+    animation: fadeUp 0.8s 0.15s ease both;
+    max-width: 900px;
+  }
+
+  .hero-title em {
+    color: var(--gold);
+    font-style: italic;
+    display: block;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(18px, 2.5vw, 24px);
+    color: rgba(245,239,224,0.7);
+    text-align: center;
+    margin-top: 28px;
+    max-width: 580px;
+    line-height: 1.6;
+    font-style: italic;
+    position: relative;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .hero-divider {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 40px auto;
+    position: relative;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+
+  .hero-divider::before {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: var(--gold);
+    font-size: 12px;
+    background: var(--ink);
+    padding: 0 8px;
+  }
+
+  .cta-primary {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    color: var(--ink);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    padding: 18px 52px;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    position: relative;
+    animation: fadeUp 0.8s 0.5s ease both;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 32px rgba(201,148,58,0.35), 0 0 0 1px rgba(201,148,58,0.5);
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 48px rgba(201,148,58,0.5), 0 0 0 1px rgba(201,148,58,0.7);
+  }
+
+  .hero-note {
+    font-size: 13px;
+    color: rgba(245,239,224,0.35);
+    margin-top: 18px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    animation: fadeUp 0.8s 0.6s ease both;
+  }
+
+  /* ── SCROLL INDICATOR ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(201,148,58,0.5);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    animation: fadeUp 1.2s 1s ease both;
+  }
+
+  .scroll-hint-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(201,148,58,0.5), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  /* ── PROBLEM SECTION ── */
+  .problem {
+    background: var(--parchment);
+    padding: 100px 24px;
+    position: relative;
+  }
+
+  .problem::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201,148,58,0.4), transparent);
+  }
+
+  .problem-text {
+    font-size: clamp(22px, 3.5vw, 34px);
+    line-height: 1.5;
+    color: var(--ink);
+    font-style: italic;
+  }
+
+  .problem-text strong {
+    font-style: normal;
+    color: var(--rust);
+    font-weight: 600;
+  }
+
+  .callout {
+    margin: 56px 0;
+    padding: 36px 48px;
+    border-left: 3px solid var(--gold);
+    background: rgba(201,148,58,0.06);
+    font-size: clamp(22px, 3vw, 30px);
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.5;
+    position: relative;
+  }
+
+  .callout::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 120px;
+    color: rgba(201,148,58,0.15);
+    position: absolute;
+    top: -20px;
+    left: 12px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  /* ── SOLUTION SECTION ── */
+  .solution {
+    background: var(--ink);
+    padding: 100px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solution-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,148,58,0.07) 0%, transparent 70%);
+  }
+
+  .solution-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(36px, 6vw, 72px);
+    color: var(--parchment);
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .solution-title span {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .solution-intro {
+    font-size: clamp(17px, 2vw, 20px);
+    color: rgba(245,239,224,0.65);
+    line-height: 1.7;
+    max-width: 600px;
+    margin-bottom: 64px;
+  }
+
+  /* ── LEARN GRID ── */
+  .learn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    background: rgba(201,148,58,0.15);
+    border: 1px solid rgba(201,148,58,0.2);
+  }
+
+  .learn-item {
+    background: var(--ink);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .learn-item:hover {
+    background: #211708;
+  }
+
+  .learn-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,148,58,0.2), transparent);
+  }
+
+  .learn-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  .learn-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--parchment);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .learn-desc {
+    font-size: 15px;
+    color: rgba(245,239,224,0.5);
+    line-height: 1.6;
+  }
+
+  /* ── DIFFERENT SECTION ── */
+  .different {
+    background: var(--parchment);
+    padding: 100px 24px;
+  }
+
+  .diff-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(32px, 5vw, 60px);
+    color: var(--ink);
+    margin-bottom: 48px;
+    line-height: 1.2;
+  }
+
+  .diff-title span { color: var(--rust); }
+
+  .diff-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .diff-list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: start;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(26,18,8,0.1);
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .diff-list li:first-child { border-top: 1px solid rgba(26,18,8,0.1); }
+
+  .diff-check {
+    width: 28px;
+    height: 28px;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* ── FINAL CTA ── */
+  .final-cta {
+    background: var(--ink);
+    padding: 120px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .final-cta-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 100%, rgba(201,148,58,0.2) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 20% 10%, rgba(139,58,26,0.1) 0%, transparent 60%);
+  }
+
+  .final-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(36px, 7vw, 84px);
+    color: var(--parchment);
+    line-height: 1.1;
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .final-title em {
+    color: var(--gold);
+    font-style: italic;
+    display: block;
+  }
+
+  .final-sub {
+    font-size: clamp(17px, 2vw, 21px);
+    color: rgba(245,239,224,0.6);
+    max-width: 500px;
+    margin: 0 auto 52px;
+    font-style: italic;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .final-cta .cta-primary { animation: none; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0e0b06;
+    padding: 36px 24px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(245,239,224,0.2);
+    letter-spacing: 0.1em;
+    border-top: 1px solid rgba(201,148,58,0.1);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.5; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+
+  /* ── REVEAL ON SCROLL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .callout { padding: 28px 28px; }
+    .learn-grid { gap: 1px; }
+    .diff-list li { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-ornament">N</div>
+
+  <div class="badge">Curso · Escritura Creativa</div>
+
+  <h1 class="hero-title">
+    Crear Novelas
+    <em>desde una Idea</em>
+  </h1>
+
+  <p class="hero-subtitle">
+    Convierte una simple idea en una novela completa… incluso si nunca has escrito una antes.
+  </p>
+
+  <div class="hero-divider"></div>
+
+  <a href="#empezar" class="cta-primary">Quiero empezar mi novela →</a>
+  <p class="hero-note">Sin experiencia previa · Sistema paso a paso</p>
+
+  <div class="scroll-hint">
+    <div class="scroll-hint-line"></div>
+    DESCUBRE MÁS
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="container">
+    <div class="section-label reveal">El problema</div>
+
+    <p class="problem-text reveal">
+      Tienes ideas. Historias. Escenas que aparecen en tu mente<br>a las tres de la madrugada.<br><br>
+      Pero no sabes cómo <strong>organizarlas</strong>, desarrollarlas<br>o —sobre todo— <strong>terminarlas</strong>.
+    </p>
+
+    <div class="callout reveal">
+      Ahí es donde la mayoría se queda… y abandona la historia que llevaban dentro.
+    </div>
+
+    <p class="problem-text reveal">
+      No es falta de talento.<br>
+      Es falta de <strong>método</strong>.
+    </p>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution">
+  <div class="solution-bg"></div>
+  <div class="container" style="position:relative;">
+
+    <div class="section-label reveal" style="color:var(--gold); opacity:0.8;">Lo que aprenderás</div>
+
+    <h2 class="solution-title reveal">
+      Un sistema<br><span>que sí funciona</span>
+    </h2>
+
+    <p class="solution-intro reveal">
+      No es teoría de escritura. Es un método claro para transformar una idea en una novela estructurada, lista para publicar o vender.
+    </p>
+
+    <div class="learn-grid">
+
+      <div class="learn-item reveal">
+        <div class="learn-num">01 · IDEA</div>
+        <div class="learn-title">De la idea vaga a la historia sólida</div>
+        <div class="learn-desc">Aprende a darle forma y dirección a esa chispa que tienes en la cabeza.</div>
+      </div>
+
+      <div class="learn-item reveal">
+        <div class="learn-num">02 · ESTRUCTURA</div>
+        <div class="learn-title">Estructura profesional sin bloquearte</div>
+        <div class="learn-desc">El esqueleto que toda novela necesita, explicado de forma simple y práctica.</div>
+      </div>
+
+      <div class="learn-item reveal">
+        <div class="learn-num">03 · PERSONAJES</div>
+        <div class="learn-title">Personajes que enganchan</div>
+        <div class="learn-desc">Crea personajes que el lector no pueda olvidar y que impulsen tu historia.</div>
+      </div>
+
+      <div class="learn-item reveal">
+        <div class="learn-num">04 · ESCENAS</div>
+        <div class="learn-title">Divide tu historia en escenas reales</div>
+        <div class="learn-desc">No teoría: aprende a cortar y organizar tu novela en piezas manejables.</div>
+      </div>
+
+      <div class="learn-item reveal">
+        <div class="learn-num">05 · CAPÍTULOS</div>
+        <div class="learn-title">Escribe sin perder el rumbo</div>
+        <div class="learn-desc">Un sistema para avanzar capítulo a capítulo con claridad y confianza.</div>
+      </div>
+
+      <div class="learn-item reveal">
+        <div class="learn-num">06 · FINAL</div>
+        <div class="learn-title">Termina tu novela. De verdad.</div>
+        <div class="learn-desc">El módulo que más necesitas: cómo cruzar la línea de llegada y no quedarte a medias.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENT -->
+<section class="different" id="empezar">
+  <div class="container">
+    <div class="section-label reveal">Por qué es diferente</div>
+
+    <h2 class="diff-title reveal">
+      No es un curso.<br>
+      Es un <span>sistema</span>.
+    </h2>
+
+    <ul class="diff-list">
+      <li class="reveal">
+        <div class="diff-check">✓</div>
+        <div>Sabes exactamente <strong>qué escribir cada día</strong>, sin adivinar ni improvisar.</div>
+      </li>
+      <li class="reveal">
+        <div class="diff-check">✓</div>
+        <div><strong>Evitas el bloqueo creativo</strong> con herramientas concretas para cuando la inspiración no aparece.</div>
+      </li>
+      <li class="reveal">
+        <div class="diff-check">✓</div>
+        <div><strong>Avanzas incluso sin inspiración</strong> — porque el método trabaja aunque tú no tengas ganas.</div>
+      </li>
+      <li class="reveal">
+        <div class="diff-check">✓</div>
+        <div>Construyes una <strong>novela completa, escena por escena</strong>, sin perderte ni abandonar a la mitad.</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-bg"></div>
+
+  <h2 class="final-title reveal">
+    Tu historia
+    <em>te espera.</em>
+  </h2>
+
+  <p class="final-sub reveal">
+    Empieza hoy con el método que convierte ideas en novelas terminadas.
+  </p>
+
+  <a href="#" class="cta-primary reveal" style="position:relative;">
+    Inscribirme al curso →
+  </a>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 · Curso: Crear Novelas desde una Idea · Todos los derechos reservados</p>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
